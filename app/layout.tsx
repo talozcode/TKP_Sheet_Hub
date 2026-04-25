@@ -11,9 +11,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sheets Control Center",
+  title: "TKP Sheet Hub",
   description:
-    "A searchable, editable control center for your Google Sheets and useful resources.",
+    "Search, edit, and manage your Google Sheets and resources in one elegant hub.",
+  icons: {
+    icon: [
+      {
+        url: "https://res.cloudinary.com/dakhwegyt/image/upload/v1777131721/ChatGPT_Image_Apr_25_2026_10_34_25_PM-Photoroom_byvvke.png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

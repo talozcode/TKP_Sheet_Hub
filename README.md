@@ -1,4 +1,4 @@
-# Sheets Control Center
+# TKP Sheet Hub
 
 A premium internal web app for searching, editing, and managing entries in your
 Google Sheet — built with **Next.js 15 (App Router)**, **TypeScript**,
@@ -214,6 +214,8 @@ Open <http://localhost:3000>.
 | `RESOURCES_TAB_NAME`            | no       | Override — defaults to `resources`                     |
 | `ARCHIVED_SHEETS_TAB_NAME`      | no       | Override — defaults to `archived_sheets`               |
 | `ARCHIVED_RESOURCES_TAB_NAME`   | no       | Override — defaults to `archived_resources`            |
+| `NEXT_PUBLIC_ORIGINAL_SHEET_URL`| no       | Master sheet URL shown in the header / hero            |
+| `NEXT_PUBLIC_LOGO_URL`          | no       | Brand logo URL shown in the header                     |
 
 ---
 

@@ -40,6 +40,8 @@ import { useCategories, useResources, useSheets } from "@/hooks/use-data";
 import { RESOURCE_TYPES, type ResourceItem, type SheetItem } from "@/lib/types";
 import type { ResourceFormValues, SheetFormValues } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
+import { BRAND } from "@/lib/branding";
+import { ArrowUpRight } from "lucide-react";
 
 type MainTab = "sheets" | "resources" | "all";
 
@@ -320,48 +322,80 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <div className="mx-auto max-w-7xl px-6 py-8 space-y-6">
-        {/* Top hero */}
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {archived ? "Archived" : "Control Center"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {archived
-                ? "Restore archived sheets and resources back into circulation."
-                : "Search, edit, and manage your sheets and useful resources."}
-            </p>
-          </div>
-          {!archived && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setSheetDrawer({ open: true, initial: null })}
-              >
-                <Plus />
-                Add Sheet
-              </Button>
-              <Button
-                onClick={() =>
-                  setResourceDrawer({ open: true, initial: null })
-                }
-              >
-                <Plus />
-                Add Resource
-              </Button>
+      <div className="mx-auto max-w-7xl px-6 py-7 space-y-5">
+        {/* Hero */}
+        <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-emerald-50/70 via-card to-teal-50/60 dark:from-emerald-950/30 dark:via-card dark:to-teal-950/30 px-5 py-5">
+          <div className="dot-grid absolute inset-0 opacity-40 pointer-events-none" />
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                {archived ? "Archived view" : "Live · Google Sheets"}
+              </div>
+              <h1 className="text-2xl font-semibold tracking-tight text-balance">
+                {archived
+                  ? "Archived items"
+                  : "Search, edit, and explore your hub."}
+              </h1>
+              <p className="text-sm text-muted-foreground max-w-xl">
+                {archived
+                  ? "Restore archived sheets and resources back into circulation."
+                  : "Everything routes through one Google Sheet — search by name, category, or notes."}
+              </p>
             </div>
-          )}
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 border-primary/30 bg-background/70 hover:bg-primary/5 text-primary"
+              >
+                <a
+                  href={BRAND.masterSheetUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open Master Sheet
+                  <ArrowUpRight className="!h-3.5 !w-3.5" />
+                </a>
+              </Button>
+              {!archived && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-9"
+                    onClick={() =>
+                      setSheetDrawer({ open: true, initial: null })
+                    }
+                  >
+                    <Plus />
+                    Add Sheet
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-9 shadow-glow"
+                    onClick={() =>
+                      setResourceDrawer({ open: true, initial: null })
+                    }
+                  >
+                    <Plus />
+                    Add Resource
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Search bar */}
         <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, title, category, description, or notes..."
-            className="h-11 pl-10 pr-12 text-base shadow-sm"
+            className="h-11 pl-10 pr-12 text-base shadow-card border-border/70 bg-card/80 focus-visible:border-primary/40 focus-visible:ring-primary/30"
           />
           <Button
             variant="ghost"
@@ -742,8 +776,8 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
 
 function FilterBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-card/40 px-3 py-2">
-      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground pr-1">
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card/60 px-3 py-2 shadow-card backdrop-blur-sm">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground pr-1">
         Filters
       </span>
       {children}
@@ -783,7 +817,7 @@ function FilterSelect({
 
 function CardGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {children}
     </div>
   );
@@ -791,9 +825,9 @@ function CardGrid({ children }: { children: React.ReactNode }) {
 
 function CardGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Skeleton key={i} className="h-48 w-full rounded-xl" />
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <Skeleton key={i} className="h-[124px] w-full rounded-xl" />
       ))}
     </div>
   );
