@@ -35,15 +35,19 @@ import { SheetDrawer } from "@/components/sheet-drawer";
 import { ResourceDrawer } from "@/components/resource-drawer";
 import { EmptyState } from "@/components/empty-state";
 import { CategoryMultiselect } from "@/components/category-multiselect";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 import { useCategories, useResources, useSheets } from "@/hooks/use-data";
 import { RESOURCE_TYPES, type ResourceItem, type SheetItem } from "@/lib/types";
 import type { ResourceFormValues, SheetFormValues } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
-import { BRAND } from "@/lib/branding";
-import { ArrowUpRight } from "lucide-react";
 
 type MainTab = "sheets" | "resources" | "all";
+
+type ConfirmArchive =
+  | { type: "sheet"; item: SheetItem }
+  | { type: "resource"; item: ResourceItem }
+  | null;
 
 interface ControlCenterProps {
   archived?: boolean;
@@ -91,6 +95,7 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
   }>({ open: false, initial: null });
 
   const [busyId, setBusyId] = React.useState<string | null>(null);
+  const [confirmArchive, setConfirmArchive] = React.useState<ConfirmArchive>(null);
 
   // ---------------------------------------------------------------
   // Filtering
@@ -198,10 +203,13 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
   // ---------------------------------------------------------------
   // Mutations
   // ---------------------------------------------------------------
+  const sheetsKey = "/api/sheets" + (archived ? "?archived=true" : "");
+  const resourcesKey = "/api/resources" + (archived ? "?archived=true" : "");
+
   async function refreshAll() {
     await Promise.all([
-      mutate("/api/sheets" + (archived ? "?archived=true" : "")),
-      mutate("/api/resources" + (archived ? "?archived=true" : "")),
+      mutate(sheetsKey),
+      mutate(resourcesKey),
       mutate("/api/categories"),
     ]);
   }
@@ -312,6 +320,69 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
     }
   }
 
+  async function toggleSheetFavorite(s: SheetItem) {
+    const next = !s.favorite;
+    mutate(
+      sheetsKey,
+      (current: SheetItem[] | undefined) =>
+        (current ?? []).map((x) =>
+          x.id === s.id ? { ...x, favorite: next } : x,
+        ),
+      false,
+    );
+    try {
+      const res = await fetch(`/api/sheets/${s.id}/favorite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorite: next }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body.error || "Could not update favorite");
+        await mutate(sheetsKey);
+      }
+    } catch {
+      toast.error("Could not update favorite");
+      await mutate(sheetsKey);
+    }
+  }
+
+  async function toggleResourceFavorite(r: ResourceItem) {
+    const next = !r.favorite;
+    mutate(
+      resourcesKey,
+      (current: ResourceItem[] | undefined) =>
+        (current ?? []).map((x) =>
+          x.id === r.id ? { ...x, favorite: next } : x,
+        ),
+      false,
+    );
+    try {
+      const res = await fetch(`/api/resources/${r.id}/favorite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorite: next }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body.error || "Could not update favorite");
+        await mutate(resourcesKey);
+      }
+    } catch {
+      toast.error("Could not update favorite");
+      await mutate(resourcesKey);
+    }
+  }
+
+  async function handleConfirmArchive() {
+    if (!confirmArchive) return;
+    if (confirmArchive.type === "sheet") {
+      await archiveSheet(confirmArchive.item);
+    } else {
+      await archiveResource(confirmArchive.item);
+    }
+  }
+
   // ---------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------
@@ -324,68 +395,46 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
     <TooltipProvider delayDuration={250}>
       <div className="mx-auto max-w-7xl px-6 py-7 space-y-5">
         {/* Hero */}
-        <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-emerald-50/70 via-card to-teal-50/60 dark:from-emerald-950/30 dark:via-card dark:to-teal-950/30 px-5 py-5">
-          <div className="dot-grid absolute inset-0 opacity-40 pointer-events-none" />
-          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                {archived ? "Archived view" : "Live · Google Sheets"}
-              </div>
-              <h1 className="text-2xl font-semibold tracking-tight text-balance">
-                {archived
-                  ? "Archived items"
-                  : "Search, edit, and explore your hub."}
-              </h1>
-              <p className="text-sm text-muted-foreground max-w-xl">
-                {archived
-                  ? "Restore archived sheets and resources back into circulation."
-                  : "Everything routes through one Google Sheet — search by name, category, or notes."}
-              </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary/80" />
+              {archived ? "Archived view" : "Live · Google Sheets"}
             </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-balance">
+              {archived
+                ? "Archived items"
+                : "Search, edit, and explore your hub."}
+            </h1>
+            <p className="text-sm text-muted-foreground max-w-xl">
+              {archived
+                ? "Restore archived sheets and resources back into circulation."
+                : "Everything routes through one Google Sheet — search by name, category, or notes."}
+            </p>
+          </div>
+          {!archived && (
             <div className="flex flex-wrap items-center gap-2">
               <Button
-                asChild
-                variant="outline"
                 size="sm"
-                className="h-9 gap-1.5 border-primary/30 bg-background/70 hover:bg-primary/5 text-primary"
+                variant="outline"
+                className="h-9"
+                onClick={() => setSheetDrawer({ open: true, initial: null })}
               >
-                <a
-                  href={BRAND.masterSheetUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Open Master Sheet
-                  <ArrowUpRight className="!h-3.5 !w-3.5" />
-                </a>
+                <Plus />
+                Add Sheet
               </Button>
-              {!archived && (
-                <>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-9"
-                    onClick={() =>
-                      setSheetDrawer({ open: true, initial: null })
-                    }
-                  >
-                    <Plus />
-                    Add Sheet
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="h-9 shadow-glow"
-                    onClick={() =>
-                      setResourceDrawer({ open: true, initial: null })
-                    }
-                  >
-                    <Plus />
-                    Add Resource
-                  </Button>
-                </>
-              )}
+              <Button
+                size="sm"
+                className="h-9"
+                onClick={() =>
+                  setResourceDrawer({ open: true, initial: null })
+                }
+              >
+                <Plus />
+                Add Resource
+              </Button>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Search bar */}
@@ -395,7 +444,7 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, title, category, description, or notes..."
-            className="h-11 pl-10 pr-12 text-base shadow-card border-border/70 bg-card/80 focus-visible:border-primary/40 focus-visible:ring-primary/30"
+            className="h-11 pl-10 pr-12 text-base shadow-card"
           />
           <Button
             variant="ghost"
@@ -517,8 +566,11 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
                       onEdit={(item) =>
                         setSheetDrawer({ open: true, initial: item })
                       }
-                      onArchive={archiveSheet}
+                      onArchive={(item) =>
+                        setConfirmArchive({ type: "sheet", item })
+                      }
                       onRestore={restoreSheet}
+                      onToggleFavorite={toggleSheetFavorite}
                     />
                   ))}
                 </AnimatePresence>
@@ -627,8 +679,11 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
                       onEdit={(item) =>
                         setResourceDrawer({ open: true, initial: item })
                       }
-                      onArchive={archiveResource}
+                      onArchive={(item) =>
+                        setConfirmArchive({ type: "resource", item })
+                      }
                       onRestore={restoreResource}
+                      onToggleFavorite={toggleResourceFavorite}
                     />
                   ))}
                 </AnimatePresence>
@@ -691,8 +746,11 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
                               onEdit={(item) =>
                                 setSheetDrawer({ open: true, initial: item })
                               }
-                              onArchive={archiveSheet}
+                              onArchive={(item) =>
+                                setConfirmArchive({ type: "sheet", item })
+                              }
                               onRestore={restoreSheet}
+                              onToggleFavorite={toggleSheetFavorite}
                             />
                           ))}
                         </AnimatePresence>
@@ -723,8 +781,11 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
                                   initial: item,
                                 })
                               }
-                              onArchive={archiveResource}
+                              onArchive={(item) =>
+                                setConfirmArchive({ type: "resource", item })
+                              }
                               onRestore={restoreResource}
+                              onToggleFavorite={toggleResourceFavorite}
                             />
                           ))}
                         </AnimatePresence>
@@ -769,6 +830,26 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
         categorySuggestions={categorySuggestions}
         sheets={sheets}
         onSubmit={handleResourceSubmit}
+      />
+
+      <ConfirmDialog
+        open={confirmArchive !== null}
+        onOpenChange={(o) => {
+          if (!o) setConfirmArchive(null);
+        }}
+        title={
+          confirmArchive
+            ? `Archive "${
+                confirmArchive.type === "sheet"
+                  ? confirmArchive.item.name
+                  : confirmArchive.item.title
+              }"?`
+            : "Archive"
+        }
+        description="It will be moved to Archived. You can restore it anytime."
+        confirmText="Archive"
+        destructive
+        onConfirm={handleConfirmArchive}
       />
     </TooltipProvider>
   );

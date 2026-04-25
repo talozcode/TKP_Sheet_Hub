@@ -4,68 +4,68 @@
 
 @layer base {
   :root {
-    /* Light — soft mint/teal canvas */
-    --background: 165 35% 98.5%;
-    --foreground: 195 35% 12%;
+    /* Light — clean, neutral with the faintest cool tint */
+    --background: 200 20% 99%;
+    --foreground: 210 25% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 195 35% 12%;
+    --card-foreground: 210 25% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 195 35% 12%;
+    --popover-foreground: 210 25% 11%;
 
-    /* Teal-emerald primary */
-    --primary: 168 76% 30%;
-    --primary-foreground: 160 60% 98%;
+    /* Teal-emerald reserved for primary action only */
+    --primary: 168 70% 30%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 168 35% 95%;
-    --secondary-foreground: 168 76% 22%;
+    --secondary: 210 15% 96%;
+    --secondary-foreground: 210 25% 16%;
 
-    --muted: 165 35% 95%;
-    --muted-foreground: 190 15% 42%;
+    --muted: 210 15% 96%;
+    --muted-foreground: 215 12% 45%;
 
-    --accent: 168 50% 92%;
-    --accent-foreground: 168 76% 22%;
+    --accent: 210 15% 95%;
+    --accent-foreground: 210 25% 16%;
 
     --destructive: 0 70% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 170 30% 90%;
-    --input: 170 30% 88%;
-    --ring: 168 76% 38%;
+    --border: 210 15% 91%;
+    --input: 210 15% 89%;
+    --ring: 168 70% 38%;
 
-    --radius: 0.85rem;
+    --radius: 0.625rem;
   }
 
   .dark {
-    /* Dark — deep teal-charcoal with neon teal accent */
-    --background: 195 32% 6%;
-    --foreground: 165 25% 94%;
+    /* Dark — neutral charcoal, teal only for actions */
+    --background: 220 14% 8%;
+    --foreground: 210 15% 94%;
 
-    --card: 195 30% 9%;
-    --card-foreground: 165 25% 94%;
+    --card: 220 14% 11%;
+    --card-foreground: 210 15% 94%;
 
-    --popover: 195 32% 8%;
-    --popover-foreground: 165 25% 94%;
+    --popover: 220 14% 9%;
+    --popover-foreground: 210 15% 94%;
 
-    --primary: 168 75% 55%;
-    --primary-foreground: 195 32% 8%;
+    --primary: 168 65% 50%;
+    --primary-foreground: 220 14% 8%;
 
-    --secondary: 195 28% 14%;
-    --secondary-foreground: 165 25% 94%;
+    --secondary: 220 12% 16%;
+    --secondary-foreground: 210 15% 94%;
 
-    --muted: 195 28% 13%;
-    --muted-foreground: 175 15% 65%;
+    --muted: 220 12% 14%;
+    --muted-foreground: 215 10% 60%;
 
-    --accent: 195 28% 16%;
-    --accent-foreground: 168 60% 88%;
+    --accent: 220 12% 17%;
+    --accent-foreground: 210 15% 94%;
 
-    --destructive: 0 70% 58%;
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 195 28% 18%;
-    --input: 195 28% 18%;
-    --ring: 168 75% 55%;
+    --border: 220 12% 18%;
+    --input: 220 12% 18%;
+    --ring: 168 65% 50%;
   }
 }
 
@@ -83,44 +83,9 @@
       "calt" 1,
       "cv11" 1,
       "ss01" 1;
-    background-image:
-      radial-gradient(
-        circle at 12% -10%,
-        hsl(168 80% 88% / 0.55),
-        transparent 40%
-      ),
-      radial-gradient(
-        circle at 88% 4%,
-        hsl(150 70% 90% / 0.45),
-        transparent 45%
-      ),
-      radial-gradient(
-        circle at 50% 110%,
-        hsl(180 60% 92% / 0.4),
-        transparent 40%
-      );
-    background-attachment: fixed;
-  }
-  .dark body {
-    background-image:
-      radial-gradient(
-        circle at 12% -10%,
-        hsl(170 80% 25% / 0.35),
-        transparent 45%
-      ),
-      radial-gradient(
-        circle at 88% 4%,
-        hsl(195 90% 20% / 0.3),
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 50% 110%,
-        hsl(168 70% 22% / 0.3),
-        transparent 45%
-      );
   }
   ::selection {
-    @apply bg-primary/25;
+    @apply bg-primary/20;
   }
 }
 
@@ -129,56 +94,29 @@
     text-wrap: balance;
   }
 
-  .gradient-tile {
-    background-image: linear-gradient(
-      135deg,
-      hsl(168 70% 50% / 0.18),
-      hsl(150 70% 55% / 0.1)
-    );
+  /* Subtle neutral icon tile, with the faintest teal accent */
+  .tile {
+    background-color: hsl(var(--muted));
+    color: hsl(var(--foreground) / 0.75);
   }
-  .dark .gradient-tile {
-    background-image: linear-gradient(
-      135deg,
-      hsl(168 75% 55% / 0.18),
-      hsl(180 75% 55% / 0.1)
-    );
+  .tile-accent {
+    background-color: hsl(168 65% 95%);
+    color: hsl(168 70% 28%);
+  }
+  .dark .tile-accent {
+    background-color: hsl(168 60% 16% / 0.7);
+    color: hsl(168 65% 65%);
   }
 
+  /* Header glass — light, mostly transparent */
   .glass {
-    background-color: hsl(var(--background) / 0.65);
-    backdrop-filter: saturate(160%) blur(14px);
-    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    background-color: hsl(var(--background) / 0.8);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
   }
 
-  /* Animated dotted texture for hero */
-  .dot-grid {
-    background-image: radial-gradient(
-      hsl(var(--foreground) / 0.07) 1px,
-      transparent 1px
-    );
-    background-size: 14px 14px;
-  }
-
-  /* Subtle moving sheen on cards */
-  .card-sheen {
-    position: relative;
-    overflow: hidden;
-  }
-  .card-sheen::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      125deg,
-      transparent 35%,
-      hsl(168 70% 80% / 0.12) 50%,
-      transparent 65%
-    );
-    transform: translateX(-110%);
-    transition: transform 700ms ease;
-    pointer-events: none;
-  }
-  .card-sheen:hover::after {
-    transform: translateX(110%);
+  /* Tabular numerics for counts */
+  .tnum {
+    font-variant-numeric: tabular-nums;
   }
 }

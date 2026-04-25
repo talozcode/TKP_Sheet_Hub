@@ -24,6 +24,7 @@ interface SheetCardProps {
   onEdit?: (sheet: SheetItem) => void;
   onArchive?: (sheet: SheetItem) => void;
   onRestore?: (sheet: SheetItem) => void;
+  onToggleFavorite?: (sheet: SheetItem) => void;
   archived?: boolean;
   busy?: boolean;
 }
@@ -33,6 +34,7 @@ export function SheetCard({
   onEdit,
   onArchive,
   onRestore,
+  onToggleFavorite,
   archived,
   busy,
 }: SheetCardProps) {
@@ -41,36 +43,65 @@ export function SheetCard({
       layout
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18 }}
+      transition={{ duration: 0.15 }}
       className="group relative"
     >
-      <div className="card-sheen relative overflow-hidden rounded-xl border border-border/70 bg-card p-3.5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-card-hover">
+      <div className="relative rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
         <div className="flex items-start gap-3">
-          {/* Icon tile */}
-          <div className="gradient-tile flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-primary ring-1 ring-primary/15">
+          <div className="tile-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-md">
             <SheetGlyph />
           </div>
 
           <div className="min-w-0 flex-1 space-y-1">
-            {/* Title row */}
+            {/* Title row + favorite */}
             <div className="flex items-start justify-between gap-2">
               <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-foreground">
                 {sheet.name || "Untitled sheet"}
               </h3>
-              <div className="flex items-center gap-1 shrink-0">
-                {sheet.favorite && (
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                )}
+              <div className="flex items-center gap-0.5 shrink-0">
                 {sheet.notes && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <StickyNote className="h-3.5 w-3.5 text-muted-foreground/70" />
+                      <span className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground/70">
+                        <StickyNote className="h-3.5 w-3.5" />
+                      </span>
                     </TooltipTrigger>
                     <TooltipContent
                       side="left"
                       className="max-w-xs whitespace-pre-line"
                     >
                       {sheet.notes}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                {onToggleFavorite && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => onToggleFavorite(sheet)}
+                        disabled={busy}
+                        aria-label={
+                          sheet.favorite ? "Remove favorite" : "Mark as favorite"
+                        }
+                        className={cn(
+                          "inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors",
+                          "hover:bg-muted",
+                          sheet.favorite
+                            ? "text-amber-500"
+                            : "text-muted-foreground/50 hover:text-amber-500",
+                        )}
+                      >
+                        <Star
+                          className={cn(
+                            "h-3.5 w-3.5 transition-transform",
+                            sheet.favorite && "fill-amber-400 text-amber-400 scale-110",
+                          )}
+                        />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {sheet.favorite ? "Unfavorite" : "Favorite"}
                     </TooltipContent>
                   </Tooltip>
                 )}
@@ -81,7 +112,7 @@ export function SheetCard({
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
               <StatusPill status={sheet.status} />
               {sheet.web_app_url && (
-                <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1">
                   <Globe className="h-2.5 w-2.5" />
                   web app
                 </span>
@@ -89,13 +120,13 @@ export function SheetCard({
               {sheet.categories.slice(0, 4).map((c) => (
                 <span
                   key={c}
-                  className="rounded-full bg-muted/60 px-1.5 py-0.5 text-[10px]"
+                  className="rounded bg-muted px-1.5 py-0.5 text-[10px] tnum"
                 >
                   {c}
                 </span>
               ))}
               {sheet.categories.length > 4 && (
-                <span className="text-[10px]">
+                <span className="text-[10px] tnum">
                   +{sheet.categories.length - 4}
                 </span>
               )}
@@ -103,7 +134,7 @@ export function SheetCard({
 
             {/* Description */}
             {sheet.description && (
-              <p className="line-clamp-2 text-xs text-muted-foreground/90">
+              <p className="line-clamp-2 text-xs text-muted-foreground">
                 {sheet.description}
               </p>
             )}
@@ -135,19 +166,14 @@ export function SheetCard({
                   </a>
                 </Button>
               )}
-              <div
-                className={cn(
-                  "ml-auto flex items-center gap-0.5 transition-opacity",
-                  "opacity-60 group-hover:opacity-100",
-                )}
-              >
+              <div className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
                 {!archived && onEdit && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onEdit(sheet)}
                         disabled={busy}
                       >
@@ -163,7 +189,7 @@ export function SheetCard({
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onArchive(sheet)}
                         disabled={busy}
                       >
@@ -179,7 +205,7 @@ export function SheetCard({
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onRestore(sheet)}
                         disabled={busy}
                       >
@@ -201,27 +227,24 @@ export function SheetCard({
 function StatusPill({ status }: { status: SheetItem["status"] }) {
   const tone =
     status === "active"
-      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+      ? "text-emerald-700 dark:text-emerald-400"
       : status === "draft"
-        ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
-        : "bg-muted text-muted-foreground";
+        ? "text-amber-700 dark:text-amber-400"
+        : "text-muted-foreground";
+  const dot =
+    status === "active"
+      ? "bg-emerald-500"
+      : status === "draft"
+        ? "bg-amber-500"
+        : "bg-muted-foreground/60";
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium capitalize",
+        "inline-flex items-center gap-1 text-[10px] font-medium capitalize",
         tone,
       )}
     >
-      <span
-        className={cn(
-          "h-1 w-1 rounded-full",
-          status === "active"
-            ? "bg-emerald-500"
-            : status === "draft"
-              ? "bg-amber-500"
-              : "bg-muted-foreground/60",
-        )}
-      />
+      <span className={cn("h-1.5 w-1.5 rounded-full", dot)} />
       {status}
     </span>
   );

@@ -10,40 +10,42 @@ import { BRAND } from "@/lib/branding";
 export function Header() {
   const { theme, setTheme } = useTheme();
   return (
-    <header className="sticky top-0 z-30 border-b border-border/60 glass">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
-        <Link href="/" className="group flex items-center gap-3">
-          <div className="relative h-9 w-9 overflow-hidden rounded-xl ring-1 ring-primary/20 bg-gradient-to-br from-emerald-500/15 via-teal-400/10 to-cyan-400/10 transition-transform group-hover:scale-105">
+    <header className="sticky top-0 z-30 border-b border-border/80 glass">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-6">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <div className="relative h-8 w-8 overflow-hidden rounded-md bg-muted ring-1 ring-border/60">
             <Image
               src={BRAND.logoUrl}
               alt={BRAND.name}
               fill
-              sizes="36px"
+              sizes="32px"
               className="object-contain p-0.5"
               priority
             />
           </div>
-          <div className="flex flex-col leading-tight">
-            <span className="font-semibold tracking-tight">{BRAND.name}</span>
-            <span className="text-[11px] text-muted-foreground hidden sm:block">
-              {BRAND.tagline}
-            </span>
-          </div>
+          <span className="font-semibold tracking-tight text-[15px]">
+            {BRAND.name}
+          </span>
         </Link>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <Button
             asChild
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="h-9 gap-1.5 border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 text-primary"
+            className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
           >
             <a href={BRAND.masterSheetUrl} target="_blank" rel="noreferrer">
               <FileSpreadsheet />
               <span className="hidden sm:inline">Master Sheet</span>
-              <ArrowUpRight className="!h-3.5 !w-3.5 opacity-70" />
+              <ArrowUpRight className="!h-3 !w-3 opacity-60" />
             </a>
           </Button>
-          <Button asChild variant="ghost" size="sm" className="h-9">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+          >
             <Link href="/archived">
               <Archive />
               <span className="hidden sm:inline">Archived</span>
@@ -52,7 +54,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label="Toggle theme"
           >
@@ -61,8 +63,6 @@ export function Header() {
           </Button>
         </div>
       </div>
-      {/* Subtle teal underline gradient */}
-      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
     </header>
   );
 }

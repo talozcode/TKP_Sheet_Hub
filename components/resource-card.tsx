@@ -34,6 +34,7 @@ interface ResourceCardProps {
   onEdit?: (r: ResourceItem) => void;
   onArchive?: (r: ResourceItem) => void;
   onRestore?: (r: ResourceItem) => void;
+  onToggleFavorite?: (r: ResourceItem) => void;
   archived?: boolean;
   busy?: boolean;
 }
@@ -67,6 +68,7 @@ export function ResourceCard({
   onEdit,
   onArchive,
   onRestore,
+  onToggleFavorite,
   archived,
   busy,
 }: ResourceCardProps) {
@@ -79,14 +81,14 @@ export function ResourceCard({
       layout
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18 }}
+      transition={{ duration: 0.15 }}
       className="group relative"
     >
-      <div className="card-sheen relative overflow-hidden rounded-xl border border-border/70 bg-card p-3.5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-card-hover">
+      <div className="relative rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
         <div className="flex items-start gap-3">
           <div
             className={cn(
-              "gradient-tile flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ring-1 ring-primary/15",
+              "tile-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-md",
               meta.tone,
             )}
           >
@@ -98,14 +100,13 @@ export function ResourceCard({
               <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-foreground">
                 {resource.title || "Untitled resource"}
               </h3>
-              <div className="flex items-center gap-1 shrink-0">
-                {resource.favorite && (
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                )}
+              <div className="flex items-center gap-0.5 shrink-0">
                 {resource.notes && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <StickyNote className="h-3.5 w-3.5 text-muted-foreground/70" />
+                      <span className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground/70">
+                        <StickyNote className="h-3.5 w-3.5" />
+                      </span>
                     </TooltipTrigger>
                     <TooltipContent
                       side="left"
@@ -115,12 +116,46 @@ export function ResourceCard({
                     </TooltipContent>
                   </Tooltip>
                 )}
+                {onToggleFavorite && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => onToggleFavorite(resource)}
+                        disabled={busy}
+                        aria-label={
+                          resource.favorite
+                            ? "Remove favorite"
+                            : "Mark as favorite"
+                        }
+                        className={cn(
+                          "inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors",
+                          "hover:bg-muted",
+                          resource.favorite
+                            ? "text-amber-500"
+                            : "text-muted-foreground/50 hover:text-amber-500",
+                        )}
+                      >
+                        <Star
+                          className={cn(
+                            "h-3.5 w-3.5 transition-transform",
+                            resource.favorite &&
+                              "fill-amber-400 text-amber-400 scale-110",
+                          )}
+                        />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {resource.favorite ? "Unfavorite" : "Favorite"}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
               {resource.resource_type && (
-                <span className="inline-flex items-center rounded-full bg-primary/8 px-1.5 py-0.5 text-[10px] font-medium capitalize text-primary">
+                <span className="inline-flex items-center capitalize text-muted-foreground">
                   {resource.resource_type}
                 </span>
               )}
@@ -130,20 +165,20 @@ export function ResourceCard({
               {resource.categories.slice(0, 4).map((c) => (
                 <span
                   key={c}
-                  className="rounded-full bg-muted/60 px-1.5 py-0.5 text-[10px]"
+                  className="rounded bg-muted px-1.5 py-0.5 text-[10px] tnum"
                 >
                   {c}
                 </span>
               ))}
               {resource.categories.length > 4 && (
-                <span className="text-[10px]">
+                <span className="text-[10px] tnum">
                   +{resource.categories.length - 4}
                 </span>
               )}
             </div>
 
             {resource.description && (
-              <p className="line-clamp-2 text-xs text-muted-foreground/90">
+              <p className="line-clamp-2 text-xs text-muted-foreground">
                 {resource.description}
               </p>
             )}
@@ -161,14 +196,14 @@ export function ResourceCard({
                   </a>
                 </Button>
               )}
-              <div className="ml-auto flex items-center gap-0.5 opacity-60 transition-opacity group-hover:opacity-100">
+              <div className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
                 {!archived && onEdit && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onEdit(resource)}
                         disabled={busy}
                       >
@@ -184,7 +219,7 @@ export function ResourceCard({
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onArchive(resource)}
                         disabled={busy}
                       >
@@ -200,7 +235,7 @@ export function ResourceCard({
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onRestore(resource)}
                         disabled={busy}
                       >
