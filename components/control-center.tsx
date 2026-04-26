@@ -396,16 +396,24 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
     <TooltipProvider delayDuration={250}>
       <div className="mx-auto max-w-7xl px-6 py-7 space-y-5">
         {/* Hero */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary/80" />
+        <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-2.5 py-0.5 text-[11px] font-medium text-primary">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+              </span>
               {archived ? "Archived view" : "Live · Google Sheets"}
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight text-balance">
-              {archived
-                ? "Archived items"
-                : "Search, edit, and explore your hub."}
+            <h1 className="text-3xl font-semibold tracking-tight text-balance leading-tight">
+              {archived ? (
+                "Archived items"
+              ) : (
+                <>
+                  Search, edit, and{" "}
+                  <span className="text-gradient-brand">explore your hub.</span>
+                </>
+              )}
             </h1>
             <p className="text-sm text-muted-foreground max-w-xl">
               {archived
@@ -446,7 +454,7 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, title, category, description, or notes..."
             className={cn(
-              "h-11 pl-10 text-base shadow-card",
+              "h-12 rounded-xl border-border/70 bg-card/80 pl-11 text-base shadow-card backdrop-blur-sm focus-visible:border-primary/40 focus-visible:ring-primary/20",
               search ? "pr-20" : "pr-12",
             )}
           />
@@ -872,7 +880,7 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
 
 function FilterBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card/60 px-3 py-2 shadow-card backdrop-blur-sm">
+    <div className="surface flex flex-wrap items-center gap-2 rounded-xl border border-border/70 px-3 py-2 shadow-card">
       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground pr-1">
         Filters
       </span>

@@ -46,7 +46,7 @@ export function SheetCard({
       transition={{ duration: 0.15 }}
       className="group relative h-full"
     >
-      <div className="relative flex h-full flex-col rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
+      <div className="relative flex h-full flex-col rounded-xl border border-border/80 bg-card p-3.5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover">
         <div className="flex flex-1 items-start gap-3">
           <div className="tile-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-md">
             <SheetGlyph />
@@ -242,12 +242,12 @@ export function SheetCard({
 }
 
 function StatusPill({ status }: { status: SheetItem["status"] }) {
-  const tone =
+  const styles =
     status === "active"
-      ? "text-emerald-700 dark:text-emerald-400"
+      ? "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20 dark:text-emerald-400"
       : status === "draft"
-        ? "text-amber-700 dark:text-amber-400"
-        : "text-muted-foreground";
+        ? "bg-amber-500/10 text-amber-700 ring-amber-500/20 dark:text-amber-400"
+        : "bg-muted text-muted-foreground ring-border";
   const dot =
     status === "active"
       ? "bg-emerald-500"
@@ -257,8 +257,8 @@ function StatusPill({ status }: { status: SheetItem["status"] }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 text-[10px] font-medium capitalize",
-        tone,
+        "inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium capitalize ring-1 ring-inset",
+        styles,
       )}
     >
       <span className={cn("h-1.5 w-1.5 rounded-full", dot)} />

@@ -11,15 +11,15 @@ export function Header() {
   const { theme, setTheme } = useTheme();
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 glass">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
+      <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-4 px-6">
         <Link href="/" className="group flex items-center gap-3">
           <Image
             src={BRAND.logoUrl}
             alt={BRAND.name}
-            width={44}
-            height={44}
-            sizes="44px"
-            className="h-11 w-11 object-contain"
+            width={50}
+            height={50}
+            sizes="50px"
+            className="h-[50px] w-[50px] object-contain"
             priority
           />
           <span className="font-semibold tracking-tight text-base">

@@ -84,7 +84,7 @@ export function ResourceCard({
       transition={{ duration: 0.15 }}
       className="group relative h-full"
     >
-      <div className="relative flex h-full flex-col rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
+      <div className="relative flex h-full flex-col rounded-xl border border-border/80 bg-card p-3.5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover">
         <div className="flex flex-1 items-start gap-3">
           <div
             className={cn(
@@ -155,7 +155,12 @@ export function ResourceCard({
 
             <div className="flex items-center gap-x-2 text-[11px] text-muted-foreground overflow-hidden">
               {resource.resource_type && (
-                <span className="inline-flex shrink-0 items-center capitalize text-muted-foreground">
+                <span
+                  className={cn(
+                    "inline-flex shrink-0 items-center rounded-full bg-primary/8 px-1.5 py-0.5 text-[10px] font-medium capitalize",
+                    meta.tone,
+                  )}
+                >
                   {resource.resource_type}
                 </span>
               )}
