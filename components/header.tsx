@@ -11,19 +11,18 @@ export function Header() {
   const { theme, setTheme } = useTheme();
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 glass">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-6">
-        <Link href="/" className="group flex items-center gap-2.5">
-          <div className="relative h-8 w-8 overflow-hidden rounded-md bg-muted ring-1 ring-border/60">
-            <Image
-              src={BRAND.logoUrl}
-              alt={BRAND.name}
-              fill
-              sizes="32px"
-              className="object-contain p-0.5"
-              priority
-            />
-          </div>
-          <span className="font-semibold tracking-tight text-[15px]">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
+        <Link href="/" className="group flex items-center gap-3">
+          <Image
+            src={BRAND.logoUrl}
+            alt={BRAND.name}
+            width={44}
+            height={44}
+            sizes="44px"
+            className="h-11 w-11 object-contain"
+            priority
+          />
+          <span className="font-semibold tracking-tight text-base">
             {BRAND.name}
           </span>
         </Link>
