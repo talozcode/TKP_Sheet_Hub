@@ -82,10 +82,10 @@ export function ResourceCard({
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15 }}
-      className="group relative"
+      className="group relative h-full"
     >
-      <div className="relative rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
-        <div className="flex items-start gap-3">
+      <div className="relative flex h-full flex-col rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
+        <div className="flex flex-1 items-start gap-3">
           <div
             className={cn(
               "tile-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-md",
@@ -95,7 +95,7 @@ export function ResourceCard({
             <Icon className="h-4 w-4" />
           </div>
 
-          <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex min-w-0 flex-1 flex-col space-y-1">
             <div className="flex items-start justify-between gap-2">
               <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-foreground">
                 {resource.title || "Untitled resource"}
@@ -153,37 +153,54 @@ export function ResourceCard({
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-x-2 text-[11px] text-muted-foreground overflow-hidden">
               {resource.resource_type && (
-                <span className="inline-flex items-center capitalize text-muted-foreground">
+                <span className="inline-flex shrink-0 items-center capitalize text-muted-foreground">
                   {resource.resource_type}
                 </span>
               )}
               {resource.source && (
-                <span className="capitalize">· {resource.source}</span>
+                <span className="shrink-0 capitalize">· {resource.source}</span>
               )}
-              {resource.categories.slice(0, 4).map((c) => (
+              {resource.categories.slice(0, 2).map((c) => (
                 <span
                   key={c}
-                  className="rounded bg-muted px-1.5 py-0.5 text-[10px] tnum"
+                  className="shrink-0 truncate max-w-[90px] rounded bg-muted px-1.5 py-0.5 text-[10px] tnum"
                 >
                   {c}
                 </span>
               ))}
-              {resource.categories.length > 4 && (
-                <span className="text-[10px] tnum">
-                  +{resource.categories.length - 4}
-                </span>
+              {resource.categories.length > 2 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] tnum text-muted-foreground hover:bg-muted-foreground/10"
+                    >
+                      +{resource.categories.length - 2}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <div className="flex flex-wrap gap-1">
+                      {resource.categories.slice(2).map((c) => (
+                        <span
+                          key={c}
+                          className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-foreground"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               )}
             </div>
 
-            {resource.description && (
-              <p className="line-clamp-2 text-xs text-muted-foreground">
-                {resource.description}
-              </p>
-            )}
+            <p className="line-clamp-2 min-h-[2lh] text-xs text-muted-foreground">
+              {resource.description || "\u00A0"}
+            </p>
 
-            <div className="flex items-center gap-1 pt-1.5">
+            <div className="mt-auto flex items-center gap-1 pt-1.5">
               {resource.url && (
                 <Button
                   asChild

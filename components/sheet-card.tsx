@@ -44,15 +44,15 @@ export function SheetCard({
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15 }}
-      className="group relative"
+      className="group relative h-full"
     >
-      <div className="relative rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
-        <div className="flex items-start gap-3">
+      <div className="relative flex h-full flex-col rounded-lg border border-border bg-card p-3.5 shadow-card transition-colors duration-150 hover:border-primary/30 hover:shadow-card-hover">
+        <div className="flex flex-1 items-start gap-3">
           <div className="tile-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-md">
             <SheetGlyph />
           </div>
 
-          <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex min-w-0 flex-1 flex-col space-y-1">
             {/* Title row + favorite */}
             <div className="flex items-start justify-between gap-2">
               <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-foreground">
@@ -109,38 +109,55 @@ export function SheetCard({
             </div>
 
             {/* Meta row */}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-x-2 text-[11px] text-muted-foreground overflow-hidden">
               <StatusPill status={sheet.status} />
               {sheet.web_app_url && (
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex shrink-0 items-center gap-1">
                   <Globe className="h-2.5 w-2.5" />
                   web app
                 </span>
               )}
-              {sheet.categories.slice(0, 4).map((c) => (
+              {sheet.categories.slice(0, 2).map((c) => (
                 <span
                   key={c}
-                  className="rounded bg-muted px-1.5 py-0.5 text-[10px] tnum"
+                  className="shrink-0 truncate max-w-[90px] rounded bg-muted px-1.5 py-0.5 text-[10px] tnum"
                 >
                   {c}
                 </span>
               ))}
-              {sheet.categories.length > 4 && (
-                <span className="text-[10px] tnum">
-                  +{sheet.categories.length - 4}
-                </span>
+              {sheet.categories.length > 2 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] tnum text-muted-foreground hover:bg-muted-foreground/10"
+                    >
+                      +{sheet.categories.length - 2}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <div className="flex flex-wrap gap-1">
+                      {sheet.categories.slice(2).map((c) => (
+                        <span
+                          key={c}
+                          className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-foreground"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               )}
             </div>
 
             {/* Description */}
-            {sheet.description && (
-              <p className="line-clamp-2 text-xs text-muted-foreground">
-                {sheet.description}
-              </p>
-            )}
+            <p className="line-clamp-2 min-h-[2lh] text-xs text-muted-foreground">
+              {sheet.description || "\u00A0"}
+            </p>
 
             {/* Action row */}
-            <div className="flex items-center gap-1 pt-1.5">
+            <div className="mt-auto flex items-center gap-1 pt-1.5">
               {sheet.sheet_url && (
                 <Button
                   asChild
