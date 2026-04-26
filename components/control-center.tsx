@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   LinkIcon,
   Inbox,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -444,8 +445,22 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, title, category, description, or notes..."
-            className="h-11 pl-10 pr-12 text-base shadow-card"
+            className={cn(
+              "h-11 pl-10 text-base shadow-card",
+              search ? "pr-20" : "pr-12",
+            )}
           />
+          {search && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-10 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={() => setSearch("")}
+              aria-label="Clear search"
+            >
+              <X />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
