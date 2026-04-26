@@ -401,7 +401,7 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
             <h1 className="text-2xl font-semibold tracking-tight text-balance">
               {archived
                 ? "Archived items"
-                : "Search, edit, and explore your hub Tal"}
+                : "Search, edit, and explore your hub."}
             </h1>
             {archived && (
               <p className="text-sm text-muted-foreground max-w-xl">
