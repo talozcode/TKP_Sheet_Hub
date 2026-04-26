@@ -397,24 +397,17 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
       <div className="mx-auto max-w-7xl px-6 py-7 space-y-5">
         {/* Hero */}
         <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-2.5 py-0.5 text-[11px] font-medium text-primary">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
-              </span>
-              {archived ? "Archived view" : "Live · Google Sheets"}
-            </div>
+          <div className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight text-balance">
               {archived
                 ? "Archived items"
                 : "Search, edit, and explore your hub."}
             </h1>
-            <p className="text-sm text-muted-foreground max-w-xl">
-              {archived
-                ? "Restore archived sheets and resources back into circulation."
-                : "Everything routes through one Google Sheet — search by name, category, or notes."}
-            </p>
+            {archived && (
+              <p className="text-sm text-muted-foreground max-w-xl">
+                Restore archived sheets and resources back into circulation.
+              </p>
+            )}
           </div>
           {!archived && (
             <div className="flex flex-wrap items-center gap-2">
