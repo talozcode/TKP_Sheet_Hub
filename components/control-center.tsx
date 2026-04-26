@@ -405,15 +405,10 @@ export function ControlCenter({ archived = false }: ControlCenterProps) {
               </span>
               {archived ? "Archived view" : "Live · Google Sheets"}
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight text-balance leading-tight">
-              {archived ? (
-                "Archived items"
-              ) : (
-                <>
-                  Search, edit, and{" "}
-                  <span className="text-gradient-brand">explore your hub.</span>
-                </>
-              )}
+            <h1 className="text-2xl font-semibold tracking-tight text-balance">
+              {archived
+                ? "Archived items"
+                : "Search, edit, and explore your hub."}
             </h1>
             <p className="text-sm text-muted-foreground max-w-xl">
               {archived
