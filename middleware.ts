@@ -16,7 +16,8 @@ async function verifySession(token: string): Promise<boolean> {
     const [dataB64, sigB64] = token.split(".");
     if (!dataB64 || !sigB64) return false;
     const sig = Uint8Array.from(atob(sigB64), (c) => c.charCodeAt(0));
-    return crypto.subtle.verify("HMAC", key, sig, new TextEncoder().encode(dataB64));
+    const data = atob(dataB64);
+    return crypto.subtle.verify("HMAC", key, sig, new TextEncoder().encode(data));
   } catch {
     return false;
   }
