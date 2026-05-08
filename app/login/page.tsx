@@ -11,6 +11,14 @@ import { BRAND } from "@/lib/branding";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
+  return (
+    <React.Suspense>
+      <LoginForm />
+    </React.Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const from = params.get("from") ?? "/";
