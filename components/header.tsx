@@ -2,13 +2,20 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Archive, ArrowUpRight, Moon, Sun, FileSpreadsheet } from "lucide-react";
+import { Archive, ArrowUpRight, Moon, Sun, FileSpreadsheet, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BRAND } from "@/lib/branding";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  }
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 glass">
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-4 px-6">
@@ -66,6 +73,15 @@ export function Header() {
           >
             <Sun className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={handleLogout}
+            aria-label="Sign out"
+          >
+            <LogOut />
           </Button>
         </div>
       </div>
